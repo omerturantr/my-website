@@ -7,3 +7,4 @@ const withMDXConfig = withMDX({
 export default withMDXConfig({
     pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
 });
+

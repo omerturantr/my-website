@@ -1,33 +1,79 @@
-import { Metadata } from "next";
+import { allPosts, type Blog } from 'contentlayer/generated';
+import { notFound } from 'next/navigation';
+import { NextSeo } from 'next-seo';
+import { Metadata } from 'next';
+import { useMDXComponent } from 'next-contentlayer/hooks';
 
-// Doğru params tipini tanımla
 interface PageProps {
     params: {
         slug: string;
     };
 }
 
-// Metadata için fonksiyon
+export async function generateStaticParams() {
+    return allPosts.map((post: Blog) => ({
+        slug: post._raw.flattenedPath,
+    }));
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-    const { slug } = params;
+    const post = allPosts.find((post: Blog) => post._raw.flattenedPath === params.slug);
+    if (!post) notFound();
+
     return {
-        title: `Blog: ${slug.replace(/-/g, " ")}`,
-        description: `Blog yazısı: ${slug.replace(/-/g, " ")} hakkında detaylar.`,
+        title: post.title,
+        description: post.description,
+        openGraph: {
+            title: post.title,
+            description: post.description,
+            url: `https://omerturan.dev/blog/${post._raw.flattenedPath}`,
+            images: [
+                {
+                    url: post.image ?? "/default-og.jpg",
+                    alt: post.title,
+                },
+            ],
+        },
+        twitter: {
+            card: "summary_large_image",
+        },
     };
 }
 
-// asıl sayfa bileşeni
 export default function BlogPostPage({ params }: PageProps) {
-    const { slug } = params;
+    const post = allPosts.find((post: Blog) => post._raw.flattenedPath === params.slug);
+    if (!post) notFound();
+
+    const MDXContent = useMDXComponent(post.body.code);
 
     return (
-        <main className="max-w-3xl mx-auto px-6 py-16">
-            <h1 className="text-3xl font-bold mb-4 text-blue-600">
-                Blog: {slug.replace(/-/g, " ")}
-            </h1>
-            <p className="text-gray-700 dark:text-gray-300">
-                Blog post içeriği yakında burada yer alacak.
-            </p>
-        </main>
+        <>
+            <NextSeo
+                title={post.title}
+                description={post.description}
+                openGraph={{
+                    url: `https://omerturan.dev/blog/${post._raw.flattenedPath}`,
+                    title: post.title,
+                    description: post.description,
+                    images: [
+                        {
+                            url: post.image ?? "/default-og.jpg",
+                            alt: post.title,
+                        },
+                    ],
+                }}
+                twitter={{
+                    cardType: "summary_large_image",
+                }}
+            />
+
+            <main className="max-w-3xl mx-auto px-6 py-16">
+                <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
+                <p className="text-gray-600 mb-6">{post.description}</p>
+                <article className="prose dark:prose-invert">
+                    <MDXContent />
+                </article>
+            </main>
+        </>
     );
 }

@@ -1,6 +1,11 @@
+'use client';
+
 import Link from "next/link";
+import { useAppContext } from '@/context/AppContext';
 
 export default function Home() {
+  const { theme, setTheme } = useAppContext();
+
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black px-4 py-20 text-center">
       <h1 className="text-4xl sm:text-6xl font-bold text-gray-900 dark:text-white mb-6">
@@ -29,6 +34,15 @@ export default function Home() {
         >
           İletişim
         </Link>
+      </div>
+
+      <div className="mt-10">
+        <button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="text-sm text-gray-500 dark:text-gray-400 underline"
+        >
+          Temayı değiştir (Şu anki: {theme})
+        </button>
       </div>
 
       <div className="mt-10 text-sm text-gray-400 dark:text-gray-600">
