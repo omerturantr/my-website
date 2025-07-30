@@ -1,6 +1,6 @@
-'use client'; // Eğer App Router kullanıyorsan bu satır gerekli
+"use client";
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from "react";
 
 type ThemeContextType = {
     theme: string;
@@ -10,10 +10,10 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-    const [theme, setTheme] = useState('light');
+    const [theme, setTheme] = useState("light");
 
     const toggleTheme = () => {
-        setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+        setTheme((prev) => (prev === "light" ? "dark" : "light"));
     };
 
     return (
@@ -26,7 +26,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 export const useTheme = () => {
     const context = useContext(ThemeContext);
     if (!context) {
-        throw new Error('useTheme must be used within a ThemeProvider');
+        throw new Error("useTheme must be used within a ThemeProvider");
     }
     return context;
 };
